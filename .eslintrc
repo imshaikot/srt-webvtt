@@ -11,6 +11,9 @@
         ]
       }
     ],
+    "prefer-promise-reject-errors":[
+      "off"
+    ],
     "symbol-description": [
       "off"
     ],
