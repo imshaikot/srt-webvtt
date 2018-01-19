@@ -2,7 +2,7 @@
 <h2 align="left"> Convert and generate ObjectURL of WebVTT from srt format subtitle on the fly over HTML5 environment</h2>
 
   HTMLMediaElement/Video doesn't support ```.srt``` (SubRip Track) format subtitle as its ```<track>``` source - in order to show captions of your video track either you have to convert the SRT file to WebVTT or write it on your own. Because ```<track src="VALID URL SCHEME">``` requires a valid URL of ```.vtt``` (Web Video Text Track) formated subtitle track.
-  This library will let you do this on fly and will give you an URL set the source of caption track.
+  This library will let you do this on the fly and will give you an URL to set the source of caption track.
 
 <p align="center">
   <a href="https://www.npmjs.org/package/srt-webvtt"><img src="https://img.shields.io/npm/v/srt-webvtt.svg?style=flat-square" /></a>
