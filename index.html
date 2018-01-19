@@ -7,9 +7,18 @@
 
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500|Gloria+Hallelujah" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <title>My Web Media Player (React)</title>
+  <script>
+    function convert(event) {
+      const file = event.files[0];
+      const webvtt = new WebVTTConverter(file);
+      webvtt
+      .getURL()
+      .then()
+      .catch(err => console.error(err))
+    }
+  </script>
+  <title>SRT to WebVTT Converter</title>
 <body>
-  
+  <input type="file" onchange="convert(this)" />
 </body>
 </html>
