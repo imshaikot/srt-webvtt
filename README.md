@@ -47,7 +47,11 @@ var VTTConverter = require('srt-webvtt');
 ## Example and API
 
 When you're about to use ```HTMLMediaElement``` (example: ```<video>```) and you want to show caption on your video player - there's a native feature that will allow you to do that.
-See the official MDN article and tutorial of this ```<track>``` feature <a href="https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/Adding_captions_and_subtitles_to_HTML5_video"> Adding captions and subtitles to HTML5 video</a>
+See the official MDN article and tutorial of this ```<track>``` feature 
+
+<a href="https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/Adding_captions_and_subtitles_to_HTML5_video"> Adding captions and subtitles to HTML5 video</a>
+
+
 But this feature is limited to WebVTT format and won't allow you to use SRT (very commonly used subtitle)
 
 So, this tiny library will take your ```.srt``` subtitle file or a ```Blob``` object and will give you converted ```.vtt``` file's valid Object URL that you can set as ```<track>```'s source.
