@@ -24,6 +24,14 @@ class WebVTTConverter {
     .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2') + '\r\n\r\n';
   }
 
+  toTypedArray(str) {
+    const result = [];
+    str.split().forEach((each, index) => {
+      result.push(parseInt(str.substring(index, index + 2), 16));
+    });
+    return Uint8Array.from(result);
+  }
+
   getURL() {
     return new Promise((resolve, reject) => {
       if (!(this.resource instanceof Blob)) return reject('Expecting resource to be a Blob but something else found.');
@@ -33,6 +41,7 @@ class WebVTTConverter {
       .then(buffer => {
         const utf8str = new TextDecoder('utf-8').decode(buffer);
         const vttString = 'WEBVTT FILE\r\n\r\n';
+        console.log(this.toTypedArray(vttString.concat(utf8str)));
       });
     });
   }
