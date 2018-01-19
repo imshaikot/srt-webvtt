@@ -1,9 +1,9 @@
 
-<h1 align="center"> Convert and generate ObjectURL of WebVTT (Web Video Text Track) from srt (SubRip Text) format subtitle </h1>
-<p align="center">
-  HTMLMediaElement/Video doesn't support ```.srt``` format subtitle as its ```<track>``` source - in order to show captions of your video track either you have to convert the SRT file to WebVTT or write it on your own. Because ```<track src="VALID URL SCHEME">``` requires a valid URL of ```.vtt``` formated subtitle track.
-  This library will let you do this on fly.
-</p>
+<h2 align="left"> Convert and generate ObjectURL of WebVTT from srt format subtitle on the fly over HTML5 environment</h2>
+
+  HTMLMediaElement/Video doesn't support ```.srt``` (SubRip Track) format subtitle as its ```<track>``` source - in order to show captions of your video track either you have to convert the SRT file to WebVTT or write it on your own. Because ```<track src="VALID URL SCHEME">``` requires a valid URL of ```.vtt``` (Web Video Text Track) formated subtitle track.
+  This library will let you do this on fly and will give you an URL set the source of caption track.
+
 <p align="center">
   <a href="https://www.npmjs.org/package/srt-webvtt"><img src="https://img.shields.io/npm/v/srt-webvtt.svg?style=flat-square" /></a>
   <a href="https://travis-ci.org/imshaikot/srt-webvtt"><img src="https://api.travis-ci.org/imshaikot/srt-webvtt.svg" /></a>
@@ -33,105 +33,52 @@ OR umd builds are also available
 
 ## Getting Started
 
-This is a tiny library to get screenshots from video tracks either from your local filesytem OR same-origin based URL.
+Using it very easy but a little tricky indeed.
+To getting started:
 
 ```js
 // Using ES6
-import VideoToThumb from 'video-thumb-generator'; // This is a default export, so you don't have to worry about the import name
+import VTTConverter from 'srt-webvtt'; // This is a default export, so you don't have to worry about the import name
 
 // Not using ES6
-var VideoToThumb = require('video-thumb-generator');
+var VTTConverter = require('srt-webvtt');
 ```
 
 ## Example and API
 
-The constructor accepts 3 types of value as its parameter. 
-  1. HTML5 File Object (Ex. ```dataTransfer.files[0]```)
-  2. Any existing/active HTML Video element's DOM object/instance (Ex. ```document.getElementById('video')```)
-  3. Same origin video URL as string. (Ex. ```'http://mydomain.com/video.avi'```)
-```js
-const videoToThumb = new VideoToThumb(file.files[0]); // OR you could pass instantiate new VideoToThumb('http://mydomain.com/video.mp4') OR maybe new VideoToThumb(document.getElementById('video'))
-```
-The instance of VideoToThumb contains a bunch of method (which are chained) but to get strated you have to call the `load()` method before any other chained method being called
+When you're about to use ```HTMLMediaElement``` (example: ```<video>```) and you want to show caption on your video player - there's a native feature that will allow you to do that.
+See the official MDN article and tutorial of this ```<track>``` feature <a href="https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/Adding_captions_and_subtitles_to_HTML5_video"> Adding captions and subtitles to HTML5 video</a>
+But this feature is limited to WebVTT format and won't allow you to use SRT (very commonly used subtitle)
+
+So, this tiny library will take your ```.srt``` subtitle file or a ```Blob``` object and will give you converted ```.vtt``` file's valid Object URL that you can set as ```<track>```'s source.
+
+<h4>See the Example below:</h4>
 
 ```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load(); // This will start the process
-```
-After the `.load()` being called then you're free to call other methods. Like `.positions([])` method - this method will accept a parameter as an Array of the positions (in second) of video duration where you want to capture the screenshots. The Defualt value is `[1]`
-```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load()
-.positions([223, 555, 632, 104]);
-```
-In order to set the returned screenshots size - you can call `.size([320, 240])` - default is `[320, 240]`
-```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load()
-.positions([223, 555, 632, 104])
-.size([480, 360]); // 480x360 pixel
-```
-You can also customize the screenshot coordinates by calling `xy([0, 0])` this method. This method will decide from which coordinate to start capturing the snapshots.
-```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load()
-.positions([223, 555, 632, 104])
-.xy([0, 0])
-.size([480, 360]);
-```
-Another method `type()` - this method to tell whether you want the image to be returned as `base64` dataURL OR HTML5 `objectURL` - default `'objectURL'`
-```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load()
-.xy([0, 0])
-.size([480, 360])
-.positions([223, 555, 632, 104])
-.type('base64')
-```
-In order to track errors during the process (media, canvas or input) - this method will help you to track and this method accept a parameter of `errorCallback`
-<b>Caution</b>: Few Media Errors are still silent and won't reach the error callback (I'll work to get it done)
-```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load()
-.xy([0, 0])
-.size([480, 360])
-.positions([223, 555, 632, 104])
-.type('base64')
-.error(function(err) {
-  console.log(JSON.stringify(err));
+import VTTConverter from 'srt-webvtt';
+
+const vttConverter = new VTTConverter(input.files[0]); // the constructor accepts a parameer of SRT subtitle blob/file object
+
+vttConverter
+.getURL()
+.then(function(url) { // Its a valid url that can be used further
+  var track = document.getElementById('my-sub-track'); // Track element (which is child of a video element)
+  var video = document.getElementById('my-video'); // Main video element
+  track.src = url; // Set the converted URL to track's source
+  video.textTracks[0].mode = 'show'; // Start showing subtitle to your track
 })
-```
-And finally the `done(callback)` method. Remember the `load()` method to start and now `done` to end the process and your job done. This method accept a parameters `successCallback`.
-The success callback returns the successive screenshots that have been taken as an array.
-```js
-const videoToThumb = new VideoToThumb(file.files[0]);
-videoToThumb
-.load()
-.xy([0, 0])
-.size([480, 360])
-.positions([223, 555, 632, 104])
-.type('base64')
-.error(function(err) {
-  console.log(JSON.stringify(err));
-})
-.done(function(imgs) {
-  imgs.forEach(function(img) {
-    var elem = new Image();
-    elem.src = img;
-    document.body.appendChild(elem);
-  })
+.catch(function(err) {
+  console.error(err);
 })
 ```
 
-Note: All methods are chained, that means every method returns the same instance/context and that means you can call any method in any order but `load()` method must be called at the top and `done()` at the bottom, unless you want some silent errors ;)
+<br />
+```Constructor(Blob)``` The constructor must a valid Blob reference to a valid srt file
 
-<b>Warnings:</b> few errors are still silent and won't reach the error callback. Feel free to make pull request.
+```getURL()``` resolves a promise with the converted subtitle's Object URL or rejects with appropriate error.
+
+```release()``` as long as you're done with the URL and subtitle you call this instance method to release the memory. 
+
 
 ## LICENSE
 
