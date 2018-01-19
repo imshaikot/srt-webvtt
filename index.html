@@ -13,7 +13,7 @@
       const webvtt = new WebVTTConverter(file);
       webvtt
       .getURL()
-      .then()
+      .then(url => console.log(url))
       .catch(err => console.error(err))
     }
   </script>

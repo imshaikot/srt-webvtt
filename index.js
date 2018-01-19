@@ -14,7 +14,23 @@ class WebVTTConverter {
       reader.readAsArrayBuffer(this.resource);
     });
   }
-
+  /**
+   * @param {*} blob
+   * @param {*} success
+   * @param {*} fail
+   */
+  static blobToString(blob, success, fail) {
+    const reader = new FileReader();
+    reader.addEventListener('loadend', (event) => {
+      const text = event.target.result;
+      success(text);
+    });
+    reader.addEventListener('error', () => fail());
+    reader.readAsText(blob);
+  }
+  /**
+   * @param {*} utf8str
+   */
   static toVTT(utf8str) {
     return utf8str
       .replace(/\{\\([ibu])\}/g, '</$1>')
@@ -24,11 +40,13 @@ class WebVTTConverter {
       .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2')
       .concat('\r\n\r\n');
   }
-
+  /**
+   * @param {*} str
+   */
   static toTypedArray(str) {
     const result = [];
-    str.split().forEach((each, index) => {
-      result.push(parseInt(str.substring(index, index + 2), 16));
+    str.split('').forEach((each) => {
+      result.push(parseInt(each.charCodeAt(), 16));
     });
     return Uint8Array.from(result);
   }
@@ -38,16 +56,28 @@ class WebVTTConverter {
       if (!(this.resource instanceof Blob)) return reject('Expecting resource to be a Blob but something else found.');
       if (!(FileReader)) return reject('No FileReader constructor found');
       if (!TextDecoder) return reject('No TextDecoder constructor found');
-      WebVTTConverter.blobToBuffer()
-        .then((buffer) => {
-          const utf8str = new TextDecoder('utf-8').decode(buffer);
+      return WebVTTConverter.blobToString(
+        this.resource,
+        (decoded) => {
           const vttString = 'WEBVTT FILE\r\n\r\n';
-          console.log(WebVTTConverter.toTypedArray(vttString.concat(utf8str)));
-        });
+          const text = vttString.concat(WebVTTConverter.toVTT(decoded));
+          const blob = new Blob([text], { type: 'text/vtt' });
+          return resolve(URL.createObjectURL(blob));
+        },
+        () => {
+          this.blobToBuffer()
+            .then((buffer) => {
+              const utf8str = new TextDecoder('utf-8').decode(buffer);
+              const vttString = 'WEBVTT FILE\r\n\r\n';
+              const text = vttString.concat(WebVTTConverter.toVTT(utf8str));
+              const blob = new Blob([text], { type: 'text/vtt' });
+              return resolve(URL.createObjectURL(blob));
+            });
+        },
+      );
     });
   }
 }
 
 window.WebVTTConverter = WebVTTConverter;
-
 export default WebVTTConverter;
