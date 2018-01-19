@@ -73,6 +73,7 @@ vttConverter
 ```
 
 <br />
+
 ```Constructor(Blob)``` The constructor must a valid Blob reference to a valid srt file
 
 ```getURL()``` resolves a promise with the converted subtitle's Object URL or rejects with appropriate error.
