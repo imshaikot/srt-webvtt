@@ -9,16 +9,45 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script>
     function convert(event) {
+      const el = document.getElementById('process');
+      el.innerHTML = '<p>Processing...</p>';
       const file = event.files[0];
+      if (!file.name.includes('.srt')) {
+        el.innerHTML = 'Process Error: you must select a subtitle file that ends with .srt';
+        return;
+      }
       const webvtt = new WebVTTConverter(file);
       webvtt
       .getURL()
-      .then(url => console.log(url))
-      .catch(err => console.error(err))
+      .then(url => {
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = file.name.substr(0, file.name.lastIndexOf('.')) + '.vtt';
+        anchor.innerText = 'Download';
+        anchor.addEventListener('click', () => webvtt.release());
+        el.innerHTML = anchor.outerHTML;
+      })
+      .catch(err => {
+        el.innerHTML = 'Process Error: ' +err;
+      });
     }
   </script>
   <title>SRT to WebVTT Converter</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+  </style>
+</head>
 <body>
-  <input type="file" onchange="convert(this)" />
+  <div style="margin: 0 auto;">
+    <div style="width: 500px; margin: 0 auto;">
+      <h3>Select a SRT format subtitle in order to convert it to WebVTT format</h3>
+      <input type="file" onchange="convert(this)" />
+      <div style="margin-top: 10px;" id="process"></div>
+    </div>
+  </div>
 </body>
 </html>

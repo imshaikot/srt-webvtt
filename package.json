@@ -6,7 +6,7 @@
   "scripts": {
     "test": "./node_modules/.bin/eslint ./index.js",
     "start": "webpack-dev-server",
-    "build": "babel ./index.js --stage 2 -d ./lib/index.js && webpack -p ./index.js ./umd/index.js",
+    "build": "babel ./index.js --stage 2 -d ./lib/ && webpack -p ./index.js ./umd/index.js",
     "minor": "npm version minor && npm publish",
     "major": "npm version major && npm publish",
     "patch": "npm version patch && npm publish"

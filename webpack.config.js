@@ -1,9 +1,11 @@
-const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './index.js',
-  output: './build/bundle.js',
+  output: {
+    library: 'VideoToThumb',
+    libraryTarget: 'umd',
+  },
   resolve: {
     extensions: ['.js'],
   },
