@@ -62,7 +62,8 @@ class WebVTTConverter {
           const vttString = 'WEBVTT FILE\r\n\r\n';
           const text = vttString.concat(WebVTTConverter.toVTT(decoded));
           const blob = new Blob([text], { type: 'text/vtt' });
-          return resolve(URL.createObjectURL(blob));
+          this.objectURL = URL.createObjectURL(blob);
+          return resolve(this.objectURL);
         },
         () => {
           this.blobToBuffer()
@@ -71,11 +72,16 @@ class WebVTTConverter {
               const vttString = 'WEBVTT FILE\r\n\r\n';
               const text = vttString.concat(WebVTTConverter.toVTT(utf8str));
               const blob = new Blob([text], { type: 'text/vtt' });
-              return resolve(URL.createObjectURL(blob));
+              this.objectURL = URL.createObjectURL(blob);
+              return resolve(this.objectURL);
             });
         },
       );
     });
+  }
+
+  release() {
+    URL.createObjectURL(this.objectURL);
   }
 }
 

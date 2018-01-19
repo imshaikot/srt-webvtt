@@ -1,11 +1,15 @@
 {
   "name": "srt-webvtt",
   "version": "0.0.0",
-  "description": "Convert SRT format subtitle to WebVTT on the fly over HTML5 environmentø",
-  "main": "index.js",
+  "description": "Convert SRT format subtitle to WebVTT on the fly over HTML5 environment",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server"
+    "test": "./node_modules/.bin/eslint ./index.js",
+    "start": "webpack-dev-server",
+    "build": "babel ./index.js --stage 2 -d ./lib/index.js && webpack -p ./index.js ./umd/index.js",
+    "minor": "npm version minor && npm publish",
+    "major": "npm version major && npm publish",
+    "patch": "npm version patch && npm publish"
   },
   "repository": {
     "type": "git",
@@ -18,7 +22,7 @@
     "track",
     "element",
     "srt-to-vtt",
-    "str-to-webvtt",
+    "srt-to-webvtt",
     "converter",
     "html5",
     "video",
