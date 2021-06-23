@@ -3,6 +3,9 @@
   "version": "1.2.0",
   "description": "Convert SRT format subtitle to WebVTT on the fly over HTML5 environment",
   "main": "lib/index.js",
+  "files": [
+    "lib/index.js"
+  ],
   "scripts": {
     "test": "./node_modules/.bin/eslint ./index.js",
     "start": "webpack-dev-server",
