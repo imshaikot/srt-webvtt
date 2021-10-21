@@ -1,90 +1,61 @@
-class WebVTTConverter {
-  constructor(resource) {
-    this.resource = resource;
-  }
+const moduleName = 'toWebVTT';
 
-  blobToBuffer() {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.addEventListener('loadend', (event) => {
-        const buf = event.target.result;
-        resolve(new Uint8Array(buf));
-      });
-      reader.addEventListener('error', () => reject('Error while reading the Blob object'));
-      reader.readAsArrayBuffer(this.resource);
-    });
-  }
-  /**
-   * @param {*} blob
-   * @param {*} success
-   * @param {*} fail
-   */
-  static blobToString(blob, success, fail) {
-    const reader = new FileReader();
-    reader.addEventListener('loadend', (event) => {
-      const text = event.target.result;
-      success(text);
-    });
-    reader.addEventListener('error', () => fail());
+const blobToBufferOrString = (blob, readAs) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  const loadedCb = (event) => {
+    const buf = event.target.result;
+    reader.removeEventListener('loadend', loadedCb);
+    resolve(readAs !== 'string' ? new Uint8Array(buf) : buf);
+  };
+
+  const errorCb = () => {
+    reader.removeEventListener('error', errorCb);
+    reject(new Error(`${moduleName}: Error while reading the Blob object`));
+  };
+
+  reader.addEventListener('loadend', loadedCb);
+  reader.addEventListener('error', errorCb);
+  if (readAs !== 'string') {
+    reader.readAsArrayBuffer(this.resource);
+  } else {
     reader.readAsText(blob);
   }
-  /**
-   * @param {*} utf8str
-   */
-  static toVTT(utf8str) {
-    return utf8str
-      .replace(/\{\\([ibu])\}/g, '</$1>')
-      .replace(/\{\\([ibu])1\}/g, '<$1>')
-      .replace(/\{([ibu])\}/g, '<$1>')
-      .replace(/\{\/([ibu])\}/g, '</$1>')
-      .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2')
-      .concat('\r\n\r\n');
-  }
-  /**
-   * @param {*} str
-   */
-  static toTypedArray(str) {
-    const result = [];
-    str.split('').forEach((each) => {
-      result.push(parseInt(each.charCodeAt(), 16));
-    });
-    return Uint8Array.from(result);
-  }
+});
 
-  getURL() {
-    return new Promise((resolve, reject) => {
-      if (!(this.resource instanceof Blob)) return reject('Expecting resource to be a Blob but something else found.');
-      if (!(FileReader)) return reject('No FileReader constructor found');
-      if (!TextDecoder) return reject('No TextDecoder constructor found');
-      return WebVTTConverter.blobToString(
-        this.resource,
-        (decoded) => {
-          const vttString = 'WEBVTT FILE\r\n\r\n';
-          const text = vttString.concat(WebVTTConverter.toVTT(decoded));
-          const blob = new Blob([text], { type: 'text/vtt' });
-          this.objectURL = URL.createObjectURL(blob);
-          return resolve(this.objectURL);
-        },
-        () => {
-          this.blobToBuffer()
-            .then((buffer) => {
-              const utf8str = new TextDecoder('utf-8').decode(buffer);
-              const vttString = 'WEBVTT FILE\r\n\r\n';
-              const text = vttString.concat(WebVTTConverter.toVTT(utf8str));
-              const blob = new Blob([text], { type: 'text/vtt' });
-              this.objectURL = URL.createObjectURL(blob);
-              return resolve(this.objectURL);
-            });
-        },
-      );
-    });
+const blobToURL = text => URL
+  .createObjectURL(new Blob([text], { type: 'text/vtt' }));
+
+const toVTT = utf8str => utf8str
+  .replace(/\{\\([ibu])\}/g, '</$1>')
+  .replace(/\{\\([ibu])1\}/g, '<$1>')
+  .replace(/\{([ibu])\}/g, '<$1>')
+  .replace(/\{\/([ibu])\}/g, '</$1>')
+  .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2')
+  .concat('\r\n\r\n');
+
+const toWebVTT = async (resource) => {
+  if (!(FileReader)) {
+    throw (new Error(`${moduleName}: No FileReader constructor found`));
   }
-
-  release() {
-    URL.createObjectURL(this.objectURL);
+  if (!TextDecoder) {
+    throw (new Error(`${moduleName}: No TextDecoder constructor found`));
   }
-}
+  if (!(resource instanceof Blob)) {
+    throw (new Error(`${moduleName}: Expecting resource to be a Blob but something else found.`));
+  }
+  let text;
+  const vttString = 'WEBVTT FILE\r\n\r\n';
+  try {
+    const buffer = await blobToBufferOrString(resource, 'string');
+    text = vttString.concat(toVTT(buffer));
+  } catch (e) {
+    const buffer = await blobToBufferOrString(resource, 'buffer');
+    const decode = new TextDecoder('utf-8').decode(buffer);
+    text = vttString.concat(toVTT(decode));
+  }
+  return Promise.resolve(blobToURL(text));
+};
 
-window.WebVTTConverter = WebVTTConverter;
+window.WebVTTConverter = toWebVTT;
 
-export default WebVTTConverter;
+export default toWebVTT;
