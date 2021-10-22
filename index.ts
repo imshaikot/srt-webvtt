@@ -1,8 +1,15 @@
 export const moduleName = 'toWebVTT';
-
+/**
+ * @param blob 
+ * @param readAs 
+ * @returns Promise<ArrayBuffer>
+ */
 const blobToBufferOrString = (blob: Blob, readAs: 'string' | 'buffer'): Promise<Uint8Array | String> => 
   new Promise((resolve, reject) => {
     const reader = new FileReader();
+    /**
+     * @param event 
+     */
     const loadedCb = (event: Event) => {
       const buf = (event.target as any).result;
       reader.removeEventListener('loadend', loadedCb);
@@ -22,10 +29,16 @@ const blobToBufferOrString = (blob: Blob, readAs: 'string' | 'buffer'): Promise<
       reader.readAsText(blob);
     }
   });
-
+/**
+ * @param text 
+ * @returns ObjectURL
+ */
 const blobToURL = (text: string): string => URL
   .createObjectURL(new Blob([text], { type: 'text/vtt' }));
-
+/**
+ * @param utf8str 
+ * @returns string
+ */
 const toVTT = (utf8str: string) => utf8str
   .replace(/\{\\([ibu])\}/g, '</$1>')
   .replace(/\{\\([ibu])1\}/g, '<$1>')
@@ -33,7 +46,10 @@ const toVTT = (utf8str: string) => utf8str
   .replace(/\{\/([ibu])\}/g, '</$1>')
   .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2')
   .concat('\r\n\r\n');
-
+/**
+ * @param resource 
+ * @returns Promise<string>
+ */
 const toWebVTT = async (resource: Blob): Promise<string> => {
   if (!(FileReader)) {
     throw (new Error(`${moduleName}: No FileReader constructor found`));
@@ -45,7 +61,7 @@ const toWebVTT = async (resource: Blob): Promise<string> => {
     throw new Error(`${moduleName}: Expecting resource to be a Blob but something else found.`);
   }
   let text;
-  const vttString = 'WEBVTT FILE\r\n\r\n';
+  const vttString = 'WEBVTT FILE\r\n\r\n'; // leading text
   try {
     const buffer = await blobToBufferOrString(resource, 'string');
     text = vttString.concat(toVTT(buffer as string));
@@ -56,7 +72,5 @@ const toWebVTT = async (resource: Blob): Promise<string> => {
   }
   return Promise.resolve(blobToURL(text));
 };
-
-(window as any).WebVTTConverter = toWebVTT;
 
 export default toWebVTT;
