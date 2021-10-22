@@ -1,4 +1,4 @@
-const moduleName = 'toWebVTT';
+export const moduleName = 'toWebVTT';
 
 const blobToBufferOrString = (blob: Blob, readAs: 'string' | 'buffer'): Promise<Uint8Array | String> => 
   new Promise((resolve, reject) => {
@@ -42,7 +42,7 @@ const toWebVTT = async (resource: Blob): Promise<string> => {
     throw (new Error(`${moduleName}: No TextDecoder constructor found`));
   }
   if (!(resource instanceof Blob)) {
-    throw (new Error(`${moduleName}: Expecting resource to be a Blob but something else found.`));
+    throw new Error(`${moduleName}: Expecting resource to be a Blob but something else found.`);
   }
   let text;
   const vttString = 'WEBVTT FILE\r\n\r\n';
