@@ -13,8 +13,12 @@ This library will let you do this on the fly and will give you an URL to set the
   <a href="http://standardjs.com">
     <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg" />
   </a>
-  [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://ko-fi.com/sahriar74587)
 </p>
+
+  
+  <p align="center"><a href="https://ko-fi.com/sahriar74587" target="_blank">
+    <img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" />
+  </a></p>
 
 ## Example
 
