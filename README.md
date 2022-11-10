@@ -15,11 +15,6 @@ This library will let you do this on the fly and will give you an URL to set the
   </a>
 </p>
 
-  
-  <p align="center"><a href="https://ko-fi.com/sahriar74587" target="_blank">
-    <img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" />
-  </a></p>
-
 ## Example
 
 <a href="https://imshaikot.github.io/srt-webvtt/">https://imshaikot.github.io/srt-webvtt/</a>
