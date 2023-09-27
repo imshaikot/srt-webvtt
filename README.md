@@ -5,13 +5,10 @@ This library will let you do this on the fly and will give you an URL to set the
 
 <p align="center">
   <a href="https://www.npmjs.org/package/srt-webvtt"><img src="https://img.shields.io/npm/v/srt-webvtt.svg?style=flat-square" /></a>
+  <img src="https://img.shields.io/npm/dm/srt-webvtt" />
   <a href="https://github.com/imshaikot/srt-webvtt/actions/workflows/node.js.yml"><img src="https://github.com/imshaikot/srt-webvtt/actions/workflows/node.js.yml/badge.svg" /></a>
   <a href="https://github.com/imshaikot/srt-webvtt/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/imshaikot/srt-webvtt.svg">
-  </a>
-
-  <a href="http://standardjs.com">
-    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg" />
   </a>
 </p>
 
