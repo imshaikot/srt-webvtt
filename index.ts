@@ -1,14 +1,14 @@
 export const moduleName = 'toWebVTT';
 /**
- * @param blob 
- * @param readAs 
+ * @param blob
+ * @param readAs
  * @returns Promise<ArrayBuffer>
  */
-const blobToBufferOrString = (blob: Blob, readAs: 'string' | 'buffer'): Promise<Uint8Array | String> => 
+const blobToBufferOrString = (blob: Blob, readAs: 'string' | 'buffer'): Promise<Uint8Array | String> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
     /**
-     * @param event 
+     * @param event
      */
     const loadedCb = (event: Event) => {
       const buf = (event.target as any).result;
@@ -30,13 +30,13 @@ const blobToBufferOrString = (blob: Blob, readAs: 'string' | 'buffer'): Promise<
     }
   });
 /**
- * @param text 
+ * @param text
  * @returns ObjectURL
  */
 const blobToURL = (text: string): string => URL
   .createObjectURL(new Blob([text], { type: 'text/vtt' }));
 /**
- * @param utf8str 
+ * @param utf8str
  * @returns string
  */
 const toVTT = (utf8str: string) => utf8str
@@ -45,9 +45,27 @@ const toVTT = (utf8str: string) => utf8str
   .replace(/\{([ibu])\}/g, '<$1>')
   .replace(/\{\/([ibu])\}/g, '</$1>')
   .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2')
+  .replace(/\r?\n\{\\an(\d)\}/, (_, pos) => srtPositionToLine(pos) + '\r\n')
   .concat('\r\n\r\n');
+
+const srtPositionToLine = (pos: number) => {
+  const values = [
+    null,
+    "line:93% position:15%",
+    "line:93%",
+    "line:93% position:85%",
+    "line:50% position:15%",
+    "line:50%",
+    "line:50% position:85%",
+    "line:7% position:15%",
+    "line:7%",
+    "line:7% position:85%",
+  ];
+  return values[pos] ?? "line:93%"
+
+}
 /**
- * @param resource 
+ * @param resource
  * @returns Promise<string>
  */
 const toWebVTT = async (resource: Blob): Promise<string> => {
