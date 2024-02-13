@@ -45,7 +45,9 @@ const toVTT = (utf8str: string) => utf8str
   .replace(/\{([ibu])\}/g, '<$1>')
   .replace(/\{\/([ibu])\}/g, '</$1>')
   .replace(/(\d\d:\d\d:\d\d),(\d\d\d)/g, '$1.$2')
-  .replace(/\r?\n\{\\an(\d)\}/, (_, pos) => srtPositionToLine(pos) + '\r\n')
+  .replace(/\r?\n\{\\an(\d)\}/g, (_, pos) => srtPositionToLine(pos) + '\r\n')
+  // force line:93% by default
+  .replace(/(\d\d:\d\d:\d\d.\d\d\d)\r?\n/g, '$1 line:93%\r\n')
   .concat('\r\n\r\n');
 
 const srtPositionToLine = (pos: number) => {
